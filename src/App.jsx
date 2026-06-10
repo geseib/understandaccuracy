@@ -23,43 +23,49 @@ export default function App() {
   };
 
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', padding: '28px 20px 60px' }}>
+    <div style={{ maxWidth: 1180, margin: '0 auto', padding: '12px 18px 20px' }}>
       <style>{ALL_CSS}</style>
 
-      <header style={{ textAlign: 'center', marginBottom: 18 }}>
+      <header style={{ textAlign: 'center', marginBottom: 8 }}>
         <h1
           style={{
             fontFamily: "'Caveat', 'Comic Sans MS', 'Chalkboard SE', cursive",
             fontWeight: 700,
-            fontSize: 52,
+            fontSize: 34,
             color: MARKER_BLUE,
             margin: 0,
+            display: 'inline-block',
             transform: 'rotate(-1deg)',
           }}
         >
           Accuracy ≠ Understanding
         </h1>
-        <p style={{ fontSize: 18, margin: '4px 0 0', color: INK }}>
-          A model can be <b>98.9% accurate</b> and still find <b>none</b> of what you’re looking for.
-          Pick a scenario or type your own numbers and watch accuracy, precision &amp; recall fight it out.
-        </p>
+        <span style={{ fontSize: 14.5, marginLeft: 14, color: INK }}>
+          A model can be <b>98.9% accurate</b> and still find <b>none</b> of what you’re looking for —
+          pick a scenario or edit the numbers right on the line.
+        </span>
       </header>
 
       <PresetBar activeName={activePreset} onPick={onPick} />
 
-      <section style={{ ...sketchBoxStyle(0), padding: '18px 14px 6px', margin: '22px 0' }}>
-        <PopulationLine cells={cells} metrics={metrics} scenarioKey={activePreset ?? 'custom'} />
+      <section style={{ ...sketchBoxStyle(0), padding: '8px 12px 0', margin: '10px auto 14px', maxWidth: 1020 }}>
+        <PopulationLine
+          cells={cells}
+          metrics={metrics}
+          scenarioKey={activePreset ?? 'custom'}
+          onChange={onCellChange}
+        />
       </section>
 
-      <section style={{ display: 'flex', flexWrap: 'wrap', gap: 22, alignItems: 'stretch' }}>
+      <section style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'stretch' }}>
         <ConfusionMatrix cells={cells} onChange={onCellChange} />
         <div
           style={{
             flex: '1 1 480px',
             minWidth: 320,
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: 18,
+            gridTemplateColumns: 'repeat(auto-fit, minmax(max(225px, 40%), 1fr))',
+            gap: 12,
           }}
         >
           {METRIC_DEFS.map((def, i) => (
@@ -67,11 +73,6 @@ export default function App() {
           ))}
         </div>
       </section>
-
-      <footer style={{ textAlign: 'center', marginTop: 36, fontSize: 15, color: '#888' }}>
-        Tip: start with “The whiteboard example”, then click “Predict everything positive” —
-        watch recall and precision trade places while accuracy shrugs.
-      </footer>
     </div>
   );
 }

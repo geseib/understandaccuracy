@@ -10,8 +10,8 @@ function Chip({ cellKey }) {
       title={meta.name}
       style={{
         display: 'inline-block',
-        width: 13,
-        height: 13,
+        width: 11,
+        height: 11,
         margin: '0 3px -1px',
         background: `${meta.color}59`,
         border: `2px solid ${meta.color}`,
@@ -36,7 +36,7 @@ function FormulaRow({ parts, cells }) {
       );
     }
     return (
-      <span key={i} style={{ color: INK, margin: '0 4px' }}>
+      <span key={i} style={{ color: INK, margin: '0 3px' }}>
         {part}
       </span>
     );
@@ -49,37 +49,37 @@ export default function MetricCard({ def, cells, value, boxIndex }) {
     <div
       style={{
         ...sketchBoxStyle(boxIndex),
-        padding: '12px 14px',
+        padding: '8px 12px',
         display: 'flex',
         flexDirection: 'column',
-        gap: 6,
+        gap: 3,
       }}
     >
-      <div style={{ fontFamily: "'Caveat', 'Comic Sans MS', 'Chalkboard SE', cursive", fontSize: 27, fontWeight: 700, color: MARKER_BLUE, lineHeight: 1 }}>
+      <div style={{ fontFamily: "'Caveat', 'Comic Sans MS', 'Chalkboard SE', cursive", fontSize: 22, fontWeight: 700, color: MARKER_BLUE, lineHeight: 1 }}>
         {def.name}
         {def.alias && (
-          <span style={{ fontFamily: "'Patrick Hand', 'Comic Sans MS', 'Chalkboard SE', cursive", fontSize: 13, color: '#777', marginLeft: 6 }}>
+          <span style={{ fontFamily: "'Patrick Hand', 'Comic Sans MS', 'Chalkboard SE', cursive", fontSize: 11.5, color: '#777', marginLeft: 5 }}>
             {def.alias}
           </span>
         )}
       </div>
-      <div style={{ fontSize: 15.5, lineHeight: 1.3 }}>{def.question}</div>
+      <div style={{ fontSize: 13.5, lineHeight: 1.25 }}>{def.question}</div>
 
-      <div style={{ fontFamily: "'Caveat', 'Comic Sans MS', 'Chalkboard SE', cursive", fontSize: 23, fontWeight: 500 }}>
+      <div style={{ fontFamily: "'Caveat', 'Comic Sans MS', 'Chalkboard SE', cursive", fontSize: 19, fontWeight: 500 }}>
         <span style={{ display: 'inline-block', textAlign: 'center', verticalAlign: 'middle' }}>
-          <span style={{ display: 'block', padding: '0 6px' }}>
+          <span style={{ display: 'block', padding: '0 5px' }}>
             <FormulaRow parts={def.formula} cells={cells} />
           </span>
-          <span style={{ display: 'block', borderTop: `2.5px solid ${INK}`, padding: '0 6px' }}>
+          <span style={{ display: 'block', borderTop: `2px solid ${INK}`, padding: '0 5px' }}>
             <FormulaRow parts={def.denomFormula} cells={cells} />
           </span>
         </span>
-        <span style={{ margin: '0 8px', verticalAlign: 'middle' }}>=</span>
+        <span style={{ margin: '0 7px', verticalAlign: 'middle' }}>=</span>
         <span
           className="pop-in"
           key={isUndefined ? '—' : value}
           style={{
-            fontSize: 54,
+            fontSize: 38,
             fontWeight: 700,
             color: isUndefined ? '#999' : INK,
             verticalAlign: 'middle',
@@ -89,7 +89,7 @@ export default function MetricCard({ def, cells, value, boxIndex }) {
         </span>
       </div>
 
-      <div style={{ fontSize: 13.5, color: isUndefined ? '#b45309' : '#777', marginTop: 'auto', lineHeight: 1.3 }}>
+      <div style={{ fontSize: 12, color: isUndefined ? '#b45309' : '#777', marginTop: 'auto', lineHeight: 1.25 }}>
         {isUndefined ? def.undefinedNote : def.caution}
       </div>
     </div>

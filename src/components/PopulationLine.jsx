@@ -1,8 +1,9 @@
 import { CELL_META, LINE_ORDER, INK, MARKER_BLUE } from '../metrics.js';
 import { roughLinePath, roughRectPath, roughBracketPath } from '../sketch.js';
+import CountInput from './CountInput.jsx';
 
 const VIEW_W = 960;
-const VIEW_H = 300;
+const VIEW_H = 276;
 const BAR_X = 60;
 const BAR_W = 840;
 const BAR_Y = 140;
@@ -72,7 +73,7 @@ function Bracket({ x1, x2, y, dir, color, caption, captionY, seed }) {
   );
 }
 
-export default function PopulationLine({ cells, metrics, scenarioKey }) {
+export default function PopulationLine({ cells, metrics, scenarioKey, onChange }) {
   const counts = LINE_ORDER.map((k) => cells[k]);
   const { total, actualPos, actualNeg, predPos, predNeg, prevalence } = metrics;
   const widths = layoutSegments(counts, total);
@@ -120,27 +121,35 @@ export default function PopulationLine({ cells, metrics, scenarioKey }) {
         return (
           <g key={seg.key}>
             <path
-              d={roughLinePath(slotXs[i], 66, anchorX, BAR_Y - 6, i + 11, 1)}
+              d={roughLinePath(slotXs[i], 74, anchorX, BAR_Y - 6, i + 11, 1)}
               fill="none"
               stroke={INK}
               strokeWidth="1.4"
               opacity="0.75"
             />
             <circle cx={anchorX} cy={BAR_Y - 4} r="4" fill={INK} />
-            <g key={scenarioKey} className="pop-in" style={{ transformOrigin: `${slotXs[i]}px 40px` }}>
-              <text x={slotXs[i]} y={32} textAnchor="middle" fill={meta.color} style={{ fontSize: 16, ...halo }}>
-                {meta.short} — {meta.blurb}
-              </text>
-              <text
-                x={slotXs[i]}
-                y={60}
-                textAnchor="middle"
-                fill={meta.color}
-                style={{ fontSize: 27, fontFamily: "'Caveat', 'Comic Sans MS', 'Chalkboard SE', cursive", fontWeight: 700, ...halo }}
-              >
-                {cells[seg.key]}
-              </text>
-            </g>
+            {/* pop-in keyed on the label only — the input must never
+                remount mid-typing or it would lose focus */}
+            <text
+              key={scenarioKey}
+              className="pop-in"
+              x={slotXs[i]}
+              y={24}
+              textAnchor="middle"
+              fill={meta.color}
+              style={{ fontSize: 16, transformOrigin: `${slotXs[i]}px 24px`, ...halo }}
+            >
+              {meta.short} — {meta.blurb}
+            </text>
+            <foreignObject x={slotXs[i] - 48} y={28} width={96} height={42}>
+              <CountInput
+                cellKey={seg.key}
+                value={cells[seg.key]}
+                onChange={onChange}
+                label={`${meta.name} (on the line)`}
+                style={{ color: meta.color, borderBottomColor: meta.color, fontSize: 27 }}
+              />
+            </foreignObject>
           </g>
         );
       })}
@@ -213,15 +222,15 @@ export default function PopulationLine({ cells, metrics, scenarioKey }) {
       />
 
       {/* footnotes */}
-      <text x={BAR_X} y={258} fill="#666" style={{ fontSize: 15, ...halo }}>
+      <text x={BAR_X} y={244} fill="#666" style={{ fontSize: 15, ...halo }}>
         whole line = the population: {total}
         {prevalence !== null &&
           ` · base rate: ${actualPos}/${total} = ${Math.round(prevalence * 1000) / 10}% truly positive`}
       </text>
-      <text x={BAR_X + BAR_W} y={258} textAnchor="end" fill="#666" style={{ fontSize: 15, ...halo }}>
+      <text x={BAR_X + BAR_W} y={244} textAnchor="end" fill="#666" style={{ fontSize: 15, ...halo }}>
         predicted negative: everything else ({predNeg})
       </text>
-      <text x={BAR_X} y={284} fill="#999" style={{ fontSize: 14.5 }}>
+      <text x={BAR_X} y={266} fill="#999" style={{ fontSize: 14.5 }}>
         recall = how much of the blue bracket is green · precision = how much of the purple bracket is green
       </text>
     </svg>
