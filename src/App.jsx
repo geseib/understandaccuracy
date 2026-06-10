@@ -1,25 +1,37 @@
 import { useMemo, useState } from 'react';
-import { computeMetrics, METRIC_DEFS, PRESETS, MARKER_BLUE, INK } from './metrics.js';
+import { computeMetrics, METRIC_DEFS, MODELS, applyModel, redistribute, MARKER_BLUE, INK } from './metrics.js';
 import { sketchBoxStyle } from './sketch.js';
 import { ALL_CSS } from './styles/global.js';
 import PopulationLine from './components/PopulationLine.jsx';
 import ConfusionMatrix from './components/ConfusionMatrix.jsx';
 import MetricCard from './components/MetricCard.jsx';
-import PresetBar from './components/PresetBar.jsx';
+import Controls from './components/Controls.jsx';
 
 export default function App() {
-  const [cells, setCells] = useState(PRESETS[0].cells);
-  const [activePreset, setActivePreset] = useState(PRESETS[0].name);
+  // the whiteboard photo: rare positives + a model that almost never says yes
+  const [cells, setCells] = useState(() => applyModel(MODELS[1], 10, 990));
+  const [activeModel, setActiveModel] = useState(MODELS[1].name);
   const metrics = useMemo(() => computeMetrics(cells), [cells]);
 
   const onCellChange = (key, value) => {
     setCells((c) => ({ ...c, [key]: value }));
-    setActivePreset(null); // hand-edited: no longer a named scenario
+    setActiveModel(null); // hand-edited: no longer a named behavior
   };
 
-  const onPick = (preset) => {
-    setCells(preset.cells);
-    setActivePreset(preset.name);
+  // new totals keep the current model behavior, redistributed across them
+  const onTotalsChange = (which, value) => {
+    setCells((c) =>
+      redistribute(c, which === 'pos' ? value : c.tp + c.fn, which === 'neg' ? value : c.fp + c.tn),
+    );
+  };
+
+  const onPopPick = (p) => {
+    setCells((c) => redistribute(c, p.pos, p.neg));
+  };
+
+  const onModelPick = (model) => {
+    setCells((c) => applyModel(model, c.tp + c.fn, c.fp + c.tn));
+    setActiveModel(model.name);
   };
 
   return (
@@ -42,17 +54,24 @@ export default function App() {
         </h1>
         <span style={{ fontSize: 14.5, marginLeft: 14, color: INK }}>
           A model can be <b>98.9% accurate</b> and still find <b>none</b> of what you’re looking for —
-          pick a scenario or edit the numbers right on the line.
+          set the population, pick a model’s behavior, or edit any number directly.
         </span>
       </header>
 
-      <PresetBar activeName={activePreset} onPick={onPick} />
+      <Controls
+        pos={metrics.actualPos}
+        neg={metrics.actualNeg}
+        activeModel={activeModel}
+        onTotalsChange={onTotalsChange}
+        onPopPick={onPopPick}
+        onModelPick={onModelPick}
+      />
 
       <section style={{ ...sketchBoxStyle(0), padding: '8px 12px 0', margin: '10px auto 14px', maxWidth: 1020 }}>
         <PopulationLine
           cells={cells}
           metrics={metrics}
-          scenarioKey={activePreset ?? 'custom'}
+          scenarioKey={activeModel ?? 'custom'}
           onChange={onCellChange}
         />
       </section>

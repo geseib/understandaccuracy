@@ -116,47 +116,75 @@ export const METRIC_DEFS = [
   },
 ];
 
-export const PRESETS = [
+// Quick population mixes: how many truly positive / truly negative.
+export const POPULATIONS = [
+  { name: 'Rare positives', pos: 10, neg: 990 },
+  { name: 'Balanced', pos: 500, neg: 500 },
+  { name: 'Mostly positive', pos: 900, neg: 100 },
+];
+
+// Model behaviors as rates, so they distribute across whatever population
+// totals are entered: recallRate = share of real positives it catches,
+// fpRate = share of real negatives it falsely flags.
+export const MODELS = [
   {
-    name: 'The whiteboard example',
-    cells: { tp: 0, fp: 1, fn: 10, tn: 989 },
+    name: 'Says “no” to everyone',
+    recallRate: 0,
+    fpRate: 0,
     takeaway:
-      '98.9% accurate — yet it caught zero of the 10 real positives. Accuracy lies when positives are rare.',
+      'Recall 0% and precision undefined — yet accuracy equals the negative share of the population. Make negatives dominate and watch it soar.',
   },
   {
-    name: 'Predict everything negative',
-    cells: { tp: 0, fp: 0, fn: 10, tn: 990 },
+    name: 'Almost never says yes',
+    recallRate: 0,
+    fpRate: 0.001,
     takeaway:
-      'Saying “no” to everyone scores 99% accuracy. Precision isn’t even defined — it never said yes.',
+      'The whiteboard special: zero real catches, a stray false alarm. Precision and recall sit at 0% while accuracy rides the base rate.',
   },
   {
-    name: 'Predict everything positive',
-    cells: { tp: 10, fp: 990, fn: 0, tn: 0 },
+    name: 'Trigger-happy',
+    recallRate: 0.9,
+    fpRate: 0.3,
     takeaway:
-      'Perfect recall is cheap: just say yes to everything. Precision collapses to 1%.',
+      'Catches 90% of real positives by flagging 30% of the negatives too. Great recall — watch how precision depends on the population mix.',
   },
   {
-    name: 'Over-predictor (false alarms)',
-    cells: { tp: 9, fp: 291, fn: 1, tn: 699 },
+    name: 'Pretty good model',
+    recallRate: 0.9,
+    fpRate: 0.1,
     takeaway:
-      'Catches 9 of 10 real positives, but 291 of its 300 alarms are false. High recall, terrible precision.',
+      'Catches 90%, false-alarms 10%. Looks strong everywhere — until positives get rare and precision slides. Try it with 10 + 990.',
   },
   {
-    name: 'Balanced & good model',
-    cells: { tp: 450, fp: 50, fn: 50, tn: 450 },
+    name: 'Says “yes” to everyone',
+    recallRate: 1,
+    fpRate: 1,
     takeaway:
-      'With a 50/50 population and a decent model, all four metrics agree at 90%. Imbalance is what splits them apart.',
-  },
-  {
-    name: 'Mostly-positive population',
-    cells: { tp: 900, fp: 100, fn: 0, tn: 0 },
-    takeaway:
-      'The same lazy “always yes” model — but now positives are common, so accuracy looks great. Base rate is everything.',
+      'Recall 100% the cheap way. Precision becomes exactly the share of positives in the population — change the mix and watch it follow.',
   },
   {
     name: 'Perfect classifier',
-    cells: { tp: 10, fp: 0, fn: 0, tn: 990 },
-    takeaway:
-      'Every prediction right, every positive found. The only scenario where nothing can disagree.',
+    recallRate: 1,
+    fpRate: 0,
+    takeaway: 'Every prediction right. The only model where the population mix changes nothing.',
   },
 ];
+
+// Distribute a model's rates across the given totals.
+export function applyModel(model, pos, neg) {
+  const tp = Math.round(model.recallRate * pos);
+  const fp = Math.round(model.fpRate * neg);
+  return { tp, fn: pos - tp, fp, tn: neg - fp };
+}
+
+// Change the population totals while keeping the current model behavior:
+// preserve the implied recall and false-alarm rates of the existing cells.
+export function redistribute(cells, newPos, newNeg) {
+  const pos = cells.tp + cells.fn;
+  const neg = cells.fp + cells.tn;
+  const recallRate = pos > 0 ? cells.tp / pos : 0;
+  const fpRate = neg > 0 ? cells.fp / neg : 0;
+  const tp = Math.round(recallRate * newPos);
+  const fp = Math.round(fpRate * newNeg);
+  return { tp, fn: newPos - tp, fp, tn: newNeg - fp };
+}
