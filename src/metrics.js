@@ -177,6 +177,47 @@ export function applyModel(model, pos, neg) {
   return { tp, fn: pos - tp, fp, tn: neg - fp };
 }
 
+// One-click contrasts: each sets BOTH the population mix and the model
+// rates to push one metric to an extreme while another collapses.
+export const EXTREMES = [
+  {
+    name: 'Accurate but blind',
+    pos: 10,
+    neg: 990,
+    recallRate: 0,
+    fpRate: 0,
+    takeaway:
+      '99% accuracy, 0% recall. With only 10 positives in 1,000, a model that never says yes is almost always “right” — and completely useless for finding anything.',
+  },
+  {
+    name: 'All recall, no accuracy',
+    pos: 10,
+    neg: 990,
+    recallRate: 1,
+    fpRate: 1,
+    takeaway:
+      '100% recall, 1% accuracy. It found all 10 positives — by accusing all 1,000. Recall without precision is just shouting.',
+  },
+  {
+    name: 'Perfect precision, useless',
+    pos: 900,
+    neg: 100,
+    recallRate: 0.01,
+    fpRate: 0,
+    takeaway:
+      '100% precision, 1% recall, 11% accuracy. It only speaks when absolutely certain — 9 flawless calls — while 891 real positives sail right past. Precision says nothing about what you missed.',
+  },
+  {
+    name: 'Accurate & crying wolf',
+    pos: 10,
+    neg: 990,
+    recallRate: 1,
+    fpRate: 0.05,
+    takeaway:
+      '95% accuracy, 100% recall — looks great! But 5 of every 6 alarms are false (precision 17%). Accuracy and recall can both shine while the alarm list is mostly noise.',
+  },
+];
+
 // Change the population totals while keeping the current model behavior:
 // preserve the implied recall and false-alarm rates of the existing cells.
 export function redistribute(cells, newPos, newNeg) {

@@ -34,6 +34,12 @@ export default function App() {
     setActiveModel(model.name);
   };
 
+  // extremes set the population AND the model rates in one click
+  const onExtremePick = (extreme) => {
+    setCells(applyModel(extreme, extreme.pos, extreme.neg));
+    setActiveModel(extreme.name);
+  };
+
   return (
     <div style={{ maxWidth: 1180, margin: '0 auto', padding: '12px 18px 20px' }}>
       <style>{ALL_CSS}</style>
@@ -65,6 +71,7 @@ export default function App() {
         onTotalsChange={onTotalsChange}
         onPopPick={onPopPick}
         onModelPick={onModelPick}
+        onExtremePick={onExtremePick}
       />
 
       <section style={{ ...sketchBoxStyle(0), padding: '8px 12px 0', margin: '10px auto 14px', maxWidth: 1020 }}>

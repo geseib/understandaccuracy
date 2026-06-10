@@ -1,4 +1,4 @@
-import { POPULATIONS, MODELS, MARKER_BLUE, INK } from '../metrics.js';
+import { POPULATIONS, MODELS, EXTREMES, MARKER_BLUE, INK } from '../metrics.js';
 import CountInput from './CountInput.jsx';
 
 const NEG_COLOR = '#64748b';
@@ -17,8 +17,8 @@ const totalInputStyle = {
   display: 'inline-block',
 };
 
-export default function Controls({ pos, neg, activeModel, onTotalsChange, onPopPick, onModelPick }) {
-  const active = MODELS.find((m) => m.name === activeModel);
+export default function Controls({ pos, neg, activeModel, onTotalsChange, onPopPick, onModelPick, onExtremePick }) {
+  const active = [...MODELS, ...EXTREMES].find((m) => m.name === activeModel);
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
       <div style={rowStyle}>
@@ -67,6 +67,23 @@ export default function Controls({ pos, neg, activeModel, onTotalsChange, onPopP
             onClick={() => onModelPick(m)}
           >
             {m.name}
+          </button>
+        ))}
+      </div>
+
+      <div style={rowStyle}>
+        <span style={{ fontSize: 16 }}>
+          <b style={{ color: '#dc2626' }}>3. Or jump to an extreme:</b>
+        </span>
+        {EXTREMES.map((e) => (
+          <button
+            key={e.name}
+            className={`sketch-btn${e.name === activeModel ? ' active' : ''}`}
+            style={{ borderColor: '#dc2626' }}
+            title={`${e.pos}+${e.neg} population · catches ${Math.round(e.recallRate * 100)}% · false-alarms on ${e.fpRate * 100}%`}
+            onClick={() => onExtremePick(e)}
+          >
+            {e.name}
           </button>
         ))}
       </div>
