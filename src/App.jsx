@@ -1,50 +1,23 @@
-import { useMemo, useState } from 'react';
-import { computeMetrics, METRIC_DEFS, MODELS, applyModel, redistribute, MARKER_BLUE, INK } from './metrics.js';
-import { sketchBoxStyle } from './sketch.js';
+import { useState } from 'react';
+import { MARKER_BLUE } from './metrics.js';
 import { ALL_CSS } from './styles/global.js';
-import PopulationLine from './components/PopulationLine.jsx';
-import ConfusionMatrix from './components/ConfusionMatrix.jsx';
-import MetricCard from './components/MetricCard.jsx';
-import Controls from './components/Controls.jsx';
+import AccuracyPage from './pages/AccuracyPage.jsx';
+import FoldPage from './pages/FoldPage.jsx';
+
+const PAGES = [
+  { key: 'accuracy', tab: 'Accuracy ≠ Understanding', title: 'Accuracy ≠ Understanding' },
+  { key: 'fold', tab: 'The Folding Paper', title: 'Fold to the Moon' },
+];
 
 export default function App() {
-  // the whiteboard photo: rare positives + a model that almost never says yes
-  const [cells, setCells] = useState(() => applyModel(MODELS[1], 10, 990));
-  const [activeModel, setActiveModel] = useState(MODELS[1].name);
-  const metrics = useMemo(() => computeMetrics(cells), [cells]);
-
-  const onCellChange = (key, value) => {
-    setCells((c) => ({ ...c, [key]: value }));
-    setActiveModel(null); // hand-edited: no longer a named behavior
-  };
-
-  // new totals keep the current model behavior, redistributed across them
-  const onTotalsChange = (which, value) => {
-    setCells((c) =>
-      redistribute(c, which === 'pos' ? value : c.tp + c.fn, which === 'neg' ? value : c.fp + c.tn),
-    );
-  };
-
-  const onPopPick = (p) => {
-    setCells((c) => redistribute(c, p.pos, p.neg));
-  };
-
-  const onModelPick = (model) => {
-    setCells((c) => applyModel(model, c.tp + c.fn, c.fp + c.tn));
-    setActiveModel(model.name);
-  };
-
-  // extremes set the population AND the model rates in one click
-  const onExtremePick = (extreme) => {
-    setCells(applyModel(extreme, extreme.pos, extreme.neg));
-    setActiveModel(extreme.name);
-  };
+  const [page, setPage] = useState('accuracy');
+  const active = PAGES.find((p) => p.key === page);
 
   return (
-    <div style={{ maxWidth: 1180, margin: '0 auto', padding: '12px 18px 20px' }}>
+    <div style={{ maxWidth: 1180, margin: '0 auto', padding: '12px 18px 28px' }}>
       <style>{ALL_CSS}</style>
 
-      <header style={{ textAlign: 'center', marginBottom: 8 }}>
+      <header style={{ textAlign: 'center', marginBottom: 6 }}>
         <h1
           style={{
             fontFamily: "'Caveat', 'Comic Sans MS', 'Chalkboard SE', cursive",
@@ -56,49 +29,28 @@ export default function App() {
             transform: 'rotate(-1deg)',
           }}
         >
-          Accuracy ≠ Understanding
+          {active.title}
         </h1>
-        <span style={{ fontSize: 14.5, marginLeft: 14, color: INK }}>
-          A model can be <b>98.9% accurate</b> and still find <b>none</b> of what you’re looking for —
-          set the population, pick a model’s behavior, or edit any number directly.
-        </span>
+        <div style={{ fontSize: 12.5, color: '#999', marginTop: 2 }}>
+          a whiteboard for the things our intuition gets wrong
+        </div>
       </header>
 
-      <Controls
-        pos={metrics.actualPos}
-        neg={metrics.actualNeg}
-        activeModel={activeModel}
-        onTotalsChange={onTotalsChange}
-        onPopPick={onPopPick}
-        onModelPick={onModelPick}
-        onExtremePick={onExtremePick}
-      />
+      {/* hand-drawn tabs */}
+      <nav style={{ display: 'flex', gap: 10, justifyContent: 'center', margin: '6px 0 12px' }}>
+        {PAGES.map((p) => (
+          <button
+            key={p.key}
+            className={`sketch-btn${p.key === page ? ' active' : ''}`}
+            style={{ fontSize: 16, padding: '5px 16px' }}
+            onClick={() => setPage(p.key)}
+          >
+            {p.tab}
+          </button>
+        ))}
+      </nav>
 
-      <section style={{ ...sketchBoxStyle(0), padding: '8px 12px 0', margin: '10px auto 14px', maxWidth: 1020 }}>
-        <PopulationLine
-          cells={cells}
-          metrics={metrics}
-          scenarioKey={activeModel ?? 'custom'}
-          onChange={onCellChange}
-        />
-      </section>
-
-      <section style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'stretch' }}>
-        <ConfusionMatrix cells={cells} onChange={onCellChange} />
-        <div
-          style={{
-            flex: '1 1 480px',
-            minWidth: 320,
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(max(225px, 40%), 1fr))',
-            gap: 12,
-          }}
-        >
-          {METRIC_DEFS.map((def, i) => (
-            <MetricCard key={def.key} def={def} cells={cells} value={metrics[def.key]} boxIndex={i + 6} />
-          ))}
-        </div>
-      </section>
+      {page === 'accuracy' ? <AccuracyPage /> : <FoldPage />}
     </div>
   );
 }
