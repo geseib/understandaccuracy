@@ -3,10 +3,16 @@ import { MARKER_BLUE } from './metrics.js';
 import { ALL_CSS } from './styles/global.js';
 import AccuracyPage from './pages/AccuracyPage.jsx';
 import FoldPage from './pages/FoldPage.jsx';
+import PositiveTestPage from './pages/PositiveTestPage.jsx';
+import BirthdayPage from './pages/BirthdayPage.jsx';
+import MontyHallPage from './pages/MontyHallPage.jsx';
 
 const PAGES = [
-  { key: 'accuracy', tab: 'Accuracy ≠ Understanding', title: 'Accuracy ≠ Understanding' },
-  { key: 'fold', tab: 'The Folding Paper', title: 'Fold to the Moon' },
+  { key: 'accuracy', tab: 'Accuracy ≠ Understanding', title: 'Accuracy ≠ Understanding', Component: AccuracyPage },
+  { key: 'positivetest', tab: 'The Positive Test', title: 'The Positive Test Paradox', Component: PositiveTestPage },
+  { key: 'montyhall', tab: 'Monty Hall', title: 'Monty Hall', Component: MontyHallPage },
+  { key: 'fold', tab: 'The Folding Paper', title: 'Fold to the Moon', Component: FoldPage },
+  { key: 'birthday', tab: 'The Birthday Paradox', title: 'The Birthday Paradox', Component: BirthdayPage },
 ];
 
 export default function App() {
@@ -50,7 +56,7 @@ export default function App() {
         ))}
       </nav>
 
-      {page === 'accuracy' ? <AccuracyPage /> : <FoldPage />}
+      <active.Component />
     </div>
   );
 }
