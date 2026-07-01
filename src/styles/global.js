@@ -19,7 +19,7 @@ export const ALL_CSS = `
   input.cell-input {
     font-family: 'Caveat', 'Comic Sans MS', 'Chalkboard SE', cursive;
     font-weight: 700;
-    font-size: 30px;
+    font-size: 24px;
     color: inherit;
     text-align: center;
     width: 100%;
@@ -36,12 +36,12 @@ export const ALL_CSS = `
 
   button.sketch-btn {
     font-family: 'Patrick Hand', 'Comic Sans MS', 'Chalkboard SE', cursive;
-    font-size: 17px;
+    font-size: 15px;
     color: #2b2b2b;
     background: #fff;
     border: 2px solid #2b2b2b;
     border-radius: 225px 15px 255px 15px / 15px 255px 15px 225px;
-    padding: 6px 14px;
+    padding: 4px 12px;
     cursor: pointer;
     transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
   }
