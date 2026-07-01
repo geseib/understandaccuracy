@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Dartboard">
+  <!-- Board background circle (own bg so it reads on light & dark tabs) -->
+  <circle cx="32" cy="32" r="30" fill="#f7f3e8" stroke="#1e293b" stroke-width="2.5"/>
+  <!-- Outer black ring -->
+  <circle cx="32" cy="32" r="26" fill="#1e293b"/>
+  <!-- Double ring (red) -->
+  <circle cx="32" cy="32" r="24" fill="#dc2626"/>
+  <!-- Main scoring area (cream) -->
+  <circle cx="32" cy="32" r="21" fill="#f4ecd6"/>
+  <!-- Triple ring (green) -->
+  <circle cx="32" cy="32" r="13" fill="#166534"/>
+  <!-- Inner scoring area (cream) -->
+  <circle cx="32" cy="32" r="10" fill="#f4ecd6"/>
+  <!-- Outer bull (green) -->
+  <circle cx="32" cy="32" r="6" fill="#166534"/>
+  <!-- Bullseye (red) -->
+  <circle cx="32" cy="32" r="3.2" fill="#dc2626"/>
+  <!-- Dart: shaft + flight, striking near the bullseye -->
+  <line x1="32" y1="32" x2="55" y2="12" stroke="#1e293b" stroke-width="2.6" stroke-linecap="round"/>
+  <polygon points="55,12 50,13 54,17" fill="#2563eb" stroke="#1e293b" stroke-width="1"/>
+</svg>
